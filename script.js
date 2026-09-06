@@ -2,8 +2,7 @@
 // SMART GREEN CAMPUS - FRONTEND JAVASCRIPT
 // =====================================================
 
-const API_URL = "http://localhost:5000/api/complaints";
-
+const API_URL = "https://smart-green-campus.onrender.com/api/complaints";
 
 // =====================================================
 // LOCAL DATA
