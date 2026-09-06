@@ -2,7 +2,8 @@
 // SMART GREEN CAMPUS - FRONTEND JAVASCRIPT
 // =====================================================
 
-const API_URL = "https://smart-green-campus.onrender.com/api/complaints";
+const API_URL = "https://smart-green-campus-backend.onrender.com/api/complaints";
+let ADMIN_PASSWORD = sessionStorage.getItem("adminPassword");
 
 // =====================================================
 // LOCAL DATA
@@ -597,12 +598,21 @@ function updateDashboard() {
 
 async function changeStatus(id) {
 
+    if (!ADMIN_PASSWORD) {
+        ADMIN_PASSWORD = prompt("🔐 Enter Admin Password:");
+
+        if (!ADMIN_PASSWORD) {
+            alert("Admin password is required.");
+            return;
+        }
+
+        sessionStorage.setItem("adminPassword", ADMIN_PASSWORD);
+    }
 
     const complaint =
         complaints.find(
             c => c.id === id
         );
-
 
     if (!complaint) {
         return;
@@ -653,11 +663,9 @@ async function changeStatus(id) {
                     method: "PUT",
 
                     headers: {
-
-                        "Content-Type":
-                            "application/json"
-
-                    },
+                             "Content-Type": "application/json",
+                            "x-admin-password": ADMIN_PASSWORD
+                         },
 
                     body:
                         JSON.stringify({
