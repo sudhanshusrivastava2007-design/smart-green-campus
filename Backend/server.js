@@ -132,11 +132,19 @@ app.post("/api/complaints", async (req, res) => {
 
 });
 
-
-// ---------- UPDATE COMPLAINT STATUS ----------
+// ---------- UPDATE COMPLAINT STATUS (ADMIN ONLY) ----------
 app.put("/api/complaints/:id", async (req, res) => {
 
     try {
+
+        // Check admin password
+        const adminPassword = req.headers["x-admin-password"];
+
+        if (!adminPassword || adminPassword !== process.env.ADMIN_PASSWORD) {
+            return res.status(401).json({
+                message: "Unauthorized: Admin access required"
+            });
+        }
 
         const complaint = await Complaint.findOneAndUpdate(
             { id: req.params.id },
@@ -145,11 +153,9 @@ app.put("/api/complaints/:id", async (req, res) => {
         );
 
         if (!complaint) {
-
             return res.status(404).json({
                 message: "Complaint not found"
             });
-
         }
 
         res.json({
@@ -167,8 +173,6 @@ app.put("/api/complaints/:id", async (req, res) => {
     }
 
 });
-
-
 // ---------- SERVER ----------
 const PORT = 5000;
 
