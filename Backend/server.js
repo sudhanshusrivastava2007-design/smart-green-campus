@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 
 const app = express();
+const ADMIN_PASSWORD = process.env.Anshu000;
 
 // Middleware
 app.use(cors());
@@ -137,25 +138,33 @@ app.put("/api/complaints/:id", async (req, res) => {
 
     try {
 
-        // Check admin password
-        const adminPassword = req.headers["x-admin-password"];
+        const adminPassword =
+            req.headers["x-admin-password"];
 
-        if (!adminPassword || adminPassword !== process.env.ADMIN_PASSWORD) {
+        if (
+            !adminPassword ||
+            adminPassword !== ADMIN_PASSWORD
+        ) {
+
             return res.status(401).json({
-                message: "Unauthorized: Admin access required"
+                message: "Unauthorized: Wrong admin password"
             });
+
         }
 
-        const complaint = await Complaint.findOneAndUpdate(
-            { id: req.params.id },
-            { status: req.body.status },
-            { new: true }
-        );
+        const complaint =
+            await Complaint.findOneAndUpdate(
+                { id: req.params.id },
+                { status: req.body.status },
+                { new: true }
+            );
 
         if (!complaint) {
+
             return res.status(404).json({
                 message: "Complaint not found"
             });
+
         }
 
         res.json({
@@ -163,7 +172,9 @@ app.put("/api/complaints/:id", async (req, res) => {
             complaint: complaint
         });
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
         res.status(500).json({
             message: "Failed to update status",
