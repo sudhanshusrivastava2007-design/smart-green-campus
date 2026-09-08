@@ -2,14 +2,22 @@
 // SMART GREEN CAMPUS - FRONTEND JAVASCRIPT
 // =====================================================
 
-const API_URL = "https://smart-green-campus-backend.onrender.com/api/complaints";
-let ADMIN_PASSWORD = sessionStorage.getItem("adminPassword");
+const API_URL =
+    "https://smart-green-campus.onrender.com/api/complaints";
+
 
 // =====================================================
 // LOCAL DATA
 // =====================================================
 
 let complaints = [];
+
+
+// =====================================================
+// ADMIN STATE
+// =====================================================
+
+let isAdminLoggedIn = false;
 
 
 // =====================================================
@@ -30,6 +38,7 @@ function calculatePriority() {
     const priorityElement =
         document.getElementById("priority");
 
+
     if (
         !severityElement ||
         !categoryElement ||
@@ -38,6 +47,7 @@ function calculatePriority() {
     ) {
         return "Medium";
     }
+
 
     const severity =
         severityElement.value;
@@ -52,28 +62,36 @@ function calculatePriority() {
     let score = 0;
 
 
-    // Severity points
+    // Severity
 
     if (severity === "High") {
+
         score += 5;
+
     }
 
     else if (severity === "Medium") {
+
         score += 3;
+
     }
 
     else if (severity === "Low") {
+
         score += 1;
+
     }
 
 
-    // Category points
+    // Category
 
     if (
         category === "Water" ||
         category === "Energy"
     ) {
+
         score += 2;
+
     }
 
 
@@ -83,7 +101,9 @@ function calculatePriority() {
         location === "Hostel" ||
         location === "Library"
     ) {
+
         score += 1;
+
     }
 
 
@@ -91,17 +111,22 @@ function calculatePriority() {
 
 
     if (score >= 6) {
+
         priority = "High";
+
     }
 
     else if (score >= 3) {
+
         priority = "Medium";
+
     }
 
 
     priorityElement.value = priority;
 
     return priority;
+
 }
 
 
@@ -122,19 +147,35 @@ async function submitComplaint(event) {
 
 
     const name =
-        document.getElementById("name").value.trim();
+        document
+            .getElementById("name")
+            .value
+            .trim();
+
 
     const location =
-        document.getElementById("location").value;
+        document
+            .getElementById("location")
+            .value;
+
 
     const category =
-        document.getElementById("category").value;
+        document
+            .getElementById("category")
+            .value;
+
 
     const description =
-        document.getElementById("description").value.trim();
+        document
+            .getElementById("description")
+            .value
+            .trim();
+
 
     const severity =
-        document.getElementById("severity").value;
+        document
+            .getElementById("severity")
+            .value;
 
 
     const priority =
@@ -178,8 +219,10 @@ async function submitComplaint(event) {
                 method: "POST",
 
                 headers: {
+
                     "Content-Type":
                         "application/json"
+
                 },
 
                 body:
@@ -202,8 +245,6 @@ async function submitComplaint(event) {
         }
 
 
-        // Add returned complaint to frontend
-
         complaints.push(
             data.complaint
         );
@@ -216,8 +257,6 @@ async function submitComplaint(event) {
         );
 
 
-        // Reset form
-
         document
             .getElementById("complaintForm")
             .reset();
@@ -229,12 +268,10 @@ async function submitComplaint(event) {
             "Automatically calculated";
 
 
-        // Update dashboard
-
         updateDashboard();
 
-
     }
+
 
     catch (error) {
 
@@ -246,7 +283,7 @@ async function submitComplaint(event) {
 
         alert(
             "❌ Complaint could not be saved.\n\n" +
-            "Please make sure backend server is running."
+            "Please try again."
         );
 
     }
@@ -255,7 +292,7 @@ async function submitComplaint(event) {
 
 
 // =====================================================
-// GET ALL COMPLAINTS FROM MONGODB
+// GET ALL COMPLAINTS
 // =====================================================
 
 async function loadComplaints() {
@@ -289,6 +326,7 @@ async function loadComplaints() {
 
     }
 
+
     catch (error) {
 
         console.error(
@@ -316,18 +354,22 @@ function trackComplaint() {
 
 
     if (!trackInput || !result) {
+
         return;
+
     }
 
 
     const id =
-        trackInput.value.trim().toUpperCase();
+        trackInput.value
+            .trim()
+            .toUpperCase();
 
 
     if (!id) {
 
         result.innerHTML =
-            "Please enter Complaint ID.";
+            "⚠️ Please enter Complaint ID.";
 
         return;
 
@@ -338,6 +380,7 @@ function trackComplaint() {
         complaints.find(
 
             c =>
+                c.id &&
                 c.id.toUpperCase() === id
 
         );
@@ -345,13 +388,40 @@ function trackComplaint() {
 
     if (complaint) {
 
+        let statusIcon = "🟡";
+
+
+        if (complaint.status === "Reported") {
+
+            statusIcon = "🔵";
+
+        }
+
+        else if (
+            complaint.status === "In Progress"
+        ) {
+
+            statusIcon = "🟠";
+
+        }
+
+        else if (
+            complaint.status === "Resolved"
+        ) {
+
+            statusIcon = "🟢";
+
+        }
+
+
         result.innerHTML =
 
             "🆔 Complaint ID: <b>" +
             complaint.id +
             "</b><br><br>" +
 
-            "📊 Status: <b>" +
+            statusIcon +
+            " Status: <b>" +
             complaint.status +
             "</b><br>" +
 
@@ -393,9 +463,6 @@ function calculateSustainabilityScore() {
 
     complaints.forEach(c => {
 
-
-        // Unresolved problems
-
         if (c.status === "Reported") {
 
             score -= 3;
@@ -410,8 +477,6 @@ function calculateSustainabilityScore() {
         }
 
 
-        // Water/Energy have higher impact
-
         if (
             c.category === "Water" ||
             c.category === "Energy"
@@ -422,8 +487,6 @@ function calculateSustainabilityScore() {
         }
 
 
-        // Resolved problems improve score
-
         if (c.status === "Resolved") {
 
             score += 1;
@@ -433,14 +496,17 @@ function calculateSustainabilityScore() {
     });
 
 
-    // Keep score between 0-100
-
     if (score < 0) {
+
         score = 0;
+
     }
 
+
     if (score > 100) {
+
         score = 100;
+
     }
 
 
@@ -456,7 +522,18 @@ function calculateSustainabilityScore() {
 function updateDashboard() {
 
 
-    // Total
+    // Active complaints only
+
+    const activeComplaints =
+        complaints.filter(
+
+            c =>
+                c.status !== "Resolved"
+
+        );
+
+
+    // Total active
 
     const total =
         document.getElementById(
@@ -467,7 +544,7 @@ function updateDashboard() {
     if (total) {
 
         total.innerText =
-            complaints.length;
+            activeComplaints.length;
 
     }
 
@@ -482,7 +559,7 @@ function updateDashboard() {
 
         high.innerText =
 
-            complaints.filter(
+            activeComplaints.filter(
 
                 c =>
                     c.priority === "High"
@@ -512,7 +589,7 @@ function updateDashboard() {
     }
 
 
-    // Sustainability Score
+    // Sustainability
 
     const score =
         document.getElementById("score");
@@ -526,7 +603,7 @@ function updateDashboard() {
     }
 
 
-    // Complaint Table
+    // Complaint table
 
     const table =
         document.getElementById(
@@ -535,15 +612,19 @@ function updateDashboard() {
 
 
     if (!table) {
+
         return;
+
     }
 
 
     table.innerHTML = "";
 
 
-    complaints.forEach(c => {
+    // IMPORTANT:
+    // Resolved complaints are not shown
 
+    activeComplaints.forEach(c => {
 
         table.innerHTML += `
 
@@ -589,6 +670,30 @@ function updateDashboard() {
 
     });
 
+
+    // Empty state
+
+    if (activeComplaints.length === 0) {
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="7"
+                    style="text-align:center; padding:30px;"
+                >
+                    🎉 No active complaints!
+                    <br>
+                    All complaints have been resolved.
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
 }
 
 
@@ -598,33 +703,38 @@ function updateDashboard() {
 
 async function changeStatus(id) {
 
-    if (!ADMIN_PASSWORD) {
-        ADMIN_PASSWORD = prompt("🔐 Enter Admin Password:");
 
-        if (!ADMIN_PASSWORD) {
-            alert("Admin password is required.");
-            return;
-        }
+    if (!isAdminLoggedIn) {
 
-        sessionStorage.setItem("adminPassword", ADMIN_PASSWORD);
+        alert(
+            "🔐 Admin access required."
+        );
+
+        return;
+
     }
+
 
     const complaint =
         complaints.find(
             c => c.id === id
         );
 
+
     if (!complaint) {
+
         return;
+
     }
 
 
     let newStatus;
 
 
+    // ONLY THREE STATUS LEVELS
+
     if (
-        complaint.status ===
-        "Reported"
+        complaint.status === "Reported"
     ) {
 
         newStatus =
@@ -633,8 +743,7 @@ async function changeStatus(id) {
     }
 
     else if (
-        complaint.status ===
-        "In Progress"
+        complaint.status === "In Progress"
     ) {
 
         newStatus =
@@ -644,14 +753,14 @@ async function changeStatus(id) {
 
     else {
 
-        newStatus =
-            "Reported";
+        // Resolved cannot be changed again
+
+        return;
 
     }
 
 
     try {
-
 
         const response =
             await fetch(
@@ -663,9 +772,9 @@ async function changeStatus(id) {
                     method: "PUT",
 
                     headers: {
-                             "Content-Type": "application/json",
-                            "x-admin-password": ADMIN_PASSWORD
-                         },
+                  "Content-Type": "application/json",
+                  "x-admin-password": sessionStorage.getItem("adminPassword")
+                     },
 
                     body:
                         JSON.stringify({
@@ -694,22 +803,24 @@ async function changeStatus(id) {
         }
 
 
-        // Replace complaint with updated data
-
         const index =
             complaints.findIndex(
                 c => c.id === id
             );
 
 
-        complaints[index] =
-            data.complaint;
+        if (index !== -1) {
+
+            complaints[index] =
+                data.complaint;
+
+        }
 
 
         updateDashboard();
 
 
-        // Refresh tracking if same ID
+        // Refresh tracking
 
         const trackId =
             document.getElementById(
@@ -732,6 +843,7 @@ async function changeStatus(id) {
 
     }
 
+
     catch (error) {
 
         console.error(
@@ -749,12 +861,118 @@ async function changeStatus(id) {
 }
 
 
-// =====================================================
-// EVENT LISTENERS
-// =====================================================
 
 
-// Complaint form
+// =====================================================
+// ADMIN LOGIN
+// =====================================================
+
+function adminLogin() {
+
+    const password = prompt(
+        "🔐 Enter Admin Password:"
+    );
+
+    if (password === null) {
+        return false;
+    }
+
+    const ADMIN_PASSWORD = "Anshu000";
+
+    if (password === ADMIN_PASSWORD) {
+
+        isAdminLoggedIn = true;
+
+        // Save password for status update
+        sessionStorage.setItem(
+            "adminPassword",
+            password
+        );
+
+        alert(
+            "✅ Admin access granted."
+        );
+
+        const dashboard =
+            document.getElementById("dashboard");
+
+        if (dashboard) {
+            dashboard.scrollIntoView({
+                behavior: "smooth"
+            });
+        }
+
+        return true;
+    }
+
+    alert(
+        "❌ Incorrect admin password."
+    );
+
+    return false;
+}
+
+
+// =====================================================
+// ADMIN LOGOUT
+// =====================================================
+
+function adminLogout() {
+
+    isAdminLoggedIn = false;
+
+    sessionStorage.removeItem(
+        "adminPassword"
+    );
+
+    window.location.hash = "home";
+
+    alert(
+        "Admin logged out."
+    );
+}
+// =====================================================
+// ADMIN NAVIGATION
+// =====================================================
+
+const adminNav =
+    document.getElementById("adminNav");
+
+if (adminNav) {
+
+    adminNav.addEventListener(
+        "click",
+        function(event) {
+
+            event.preventDefault();
+
+            adminLogin();
+
+        }
+    );
+}
+
+
+// =====================================================
+// ADMIN LOGOUT BUTTON
+// =====================================================
+
+const adminLogoutButton =
+    document.getElementById("adminLogout");
+
+if (adminLogoutButton) {
+
+    adminLogoutButton.addEventListener(
+        "click",
+        adminLogout
+    );
+
+}
+
+
+// =====================================================
+// COMPLAINT FORM
+// =====================================================
 
 const complaintForm =
     document.getElementById(
@@ -772,7 +990,9 @@ if (complaintForm) {
 }
 
 
-// Severity
+// =====================================================
+// SEVERITY
+// =====================================================
 
 const severity =
     document.getElementById(
@@ -790,7 +1010,9 @@ if (severity) {
 }
 
 
-// Category
+// =====================================================
+// CATEGORY
+// =====================================================
 
 const category =
     document.getElementById(
@@ -808,7 +1030,9 @@ if (category) {
 }
 
 
-// Location
+// =====================================================
+// LOCATION
+// =====================================================
 
 const locationSelect =
     document.getElementById(

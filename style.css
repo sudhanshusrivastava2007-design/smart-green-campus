@@ -1,41 +1,87 @@
+/* =====================================================
+   RESET
+===================================================== */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+
+/* =====================================================
+   BODY
+===================================================== */
+
 body {
     font-family: Arial, sans-serif;
     background: #f4f8f4;
     color: #222;
+    line-height: 1.5;
 }
 
 
-/* Header */
+/* =====================================================
+   HEADER
+===================================================== */
 
 header {
     background: #166534;
     color: white;
 
-    padding: 20px 8%;
+    padding: 18px 6%;
 
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
 }
 
 header h1 {
     font-size: 24px;
+    white-space: nowrap;
+}
+
+
+/* =====================================================
+   NAVBAR
+===================================================== */
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 nav a {
     color: white;
     text-decoration: none;
-    margin-left: 20px;
+
+    margin-left: 8px;
+
+    padding: 8px 10px;
+
+    border-radius: 7px;
+
+    font-size: 14px;
+
+    transition: 0.3s;
+}
+
+nav a:hover {
+    background: rgba(255, 255, 255, 0.16);
 }
 
 
-/* Hero */
+/* =====================================================
+   HERO
+===================================================== */
 
 .hero {
     text-align: center;
@@ -57,10 +103,14 @@ nav a {
     font-size: 18px;
 
     margin-bottom: 30px;
+
+    color: #444;
 }
 
 
-/* Buttons */
+/* =====================================================
+   BUTTONS
+===================================================== */
 
 button {
     background: #166534;
@@ -76,14 +126,20 @@ button {
     font-size: 16px;
 
     cursor: pointer;
+
+    transition: 0.3s;
 }
 
 button:hover {
     background: #0f4d27;
+
+    transform: translateY(-1px);
 }
 
 
-/* Feature Cards */
+/* =====================================================
+   FEATURES
+===================================================== */
 
 .features {
     padding: 60px 8%;
@@ -91,7 +147,7 @@ button:hover {
     display: grid;
 
     grid-template-columns:
-        repeat(4, 1fr);
+        repeat(5, 1fr);
 
     gap: 20px;
 }
@@ -99,14 +155,20 @@ button:hover {
 .card {
     background: white;
 
-    padding: 30px;
+    padding: 30px 20px;
 
     text-align: center;
 
     border-radius: 12px;
 
     box-shadow:
-        0 5px 15px rgba(0,0,0,0.08);
+        0 5px 15px rgba(0, 0, 0, 0.08);
+
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
 }
 
 .card h3 {
@@ -116,12 +178,14 @@ button:hover {
 }
 
 
-/* Sections */
+/* =====================================================
+   SECTIONS
+===================================================== */
 
 section:not(.hero):not(.features) {
     padding: 70px 8%;
 
-    max-width: 1000px;
+    max-width: 1100px;
 
     margin: auto;
 }
@@ -129,11 +193,13 @@ section:not(.hero):not(.features) {
 section h2 {
     color: #166534;
 
-    margin-bottom: 25px;
+    margin-bottom: 15px;
 }
 
 
-/* Form */
+/* =====================================================
+   FORM
+===================================================== */
 
 form {
     background: white;
@@ -143,7 +209,9 @@ form {
     border-radius: 12px;
 
     box-shadow:
-        0 5px 15px rgba(0,0,0,0.08);
+        0 5px 15px rgba(0, 0, 0, 0.08);
+
+    margin-top: 25px;
 }
 
 label {
@@ -168,6 +236,19 @@ textarea {
     border-radius: 7px;
 
     font-size: 15px;
+
+    font-family: inherit;
+
+    outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #166534;
+
+    box-shadow:
+        0 0 0 2px rgba(22, 101, 52, 0.08);
 }
 
 textarea {
@@ -181,7 +262,9 @@ form button {
 }
 
 
-/* Success message */
+/* =====================================================
+   SUCCESS MESSAGE
+===================================================== */
 
 #successMessage {
     margin-top: 20px;
@@ -192,16 +275,28 @@ form button {
 }
 
 
-/* Track */
+/* =====================================================
+   TRACK
+===================================================== */
 
 #track {
     background: #eef7ef;
 }
 
-#trackId {
-    max-width: 400px;
+.track-box {
+    display: flex;
 
-    margin-bottom: 15px;
+    gap: 10px;
+
+    align-items: center;
+
+    margin-top: 20px;
+}
+
+#trackId {
+    max-width: 500px;
+
+    margin-bottom: 0;
 }
 
 #trackResult {
@@ -212,10 +307,162 @@ form button {
     padding: 20px;
 
     border-radius: 10px;
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.06);
 }
 
 
-/* Dashboard */
+/* =====================================================
+   CAMPUS MAP
+===================================================== */
+
+#map {
+    background: white;
+}
+
+.map-box {
+    margin-top: 25px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 20px;
+
+    padding: 25px;
+
+    background: #eef7ef;
+
+    border-radius: 15px;
+}
+
+.map-location {
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 12px;
+
+    text-align: center;
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.07);
+
+    transition: 0.3s;
+}
+
+.map-location:hover {
+    transform: translateY(-5px);
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.map-icon {
+    font-size: 30px;
+
+    margin-bottom: 8px;
+}
+
+.map-location h3 {
+    color: #166534;
+
+    margin-bottom: 5px;
+}
+
+.map-location span {
+    color: #666;
+
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   ABOUT
+===================================================== */
+
+#about {
+    background: #f4f8f4;
+}
+
+.about-box {
+    background: white;
+
+    padding: 30px;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.07);
+}
+
+.about-box h3 {
+    color: #166534;
+
+    margin-bottom: 15px;
+}
+
+.about-box p {
+    font-size: 16px;
+
+    line-height: 1.7;
+
+    margin-bottom: 15px;
+}
+
+.about-features {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 15px;
+
+    margin-top: 25px;
+}
+
+.about-features div {
+    background: #eef7ef;
+
+    padding: 20px;
+
+    border-radius: 10px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+.about-features strong {
+    color: #166534;
+}
+
+
+/* =====================================================
+   ADMIN DASHBOARD
+===================================================== */
+
+.admin-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 25px;
+}
+
+.logout-button {
+    background: #8b1e1e;
+}
+
+.logout-button:hover {
+    background: #6e1616;
+}
 
 .dashboard {
     display: grid;
@@ -236,7 +483,7 @@ form button {
     text-align: center;
 
     box-shadow:
-        0 5px 15px rgba(0,0,0,0.08);
+        0 5px 15px rgba(0, 0, 0, 0.08);
 }
 
 .stat h3 {
@@ -246,50 +493,23 @@ form button {
 }
 
 
-/* Footer */
-
-footer {
-    background: #123d24;
-
-    color: white;
-
-    text-align: center;
-
-    padding: 25px;
-}
-
-
-/* Mobile */
-
-@media (max-width: 700px) {
-
-    header {
-        flex-direction: column;
-
-        gap: 15px;
-    }
-
-    .features {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .dashboard {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .hero h2 {
-        font-size: 35px;
-    }
-}
-/* Complaint Table */
+/* =====================================================
+   COMPLAINT MANAGEMENT
+===================================================== */
 
 .table-heading {
     margin-top: 50px;
+
+    margin-bottom: 10px;
 }
 
+.management-info {
+    color: #666;
+
+    margin-bottom: 20px;
+}
 
 .table-container {
-
     overflow-x: auto;
 
     background: white;
@@ -299,54 +519,169 @@ footer {
     margin-top: 20px;
 
     box-shadow:
-        0 5px 15px rgba(0,0,0,0.08);
-
+        0 5px 15px rgba(0, 0, 0, 0.08);
 }
 
-
 table {
-
     width: 100%;
 
     border-collapse: collapse;
 
     min-width: 800px;
-
 }
-
 
 th,
 td {
-
     padding: 15px;
 
     text-align: left;
 
     border-bottom: 1px solid #ddd;
-
 }
 
-
 th {
-
     background: #166534;
 
     color: white;
-
 }
-
 
 tr:hover {
-
     background: #f2f8f3;
-
 }
 
-
 table button {
-
     padding: 8px 12px;
 
     font-size: 13px;
+}
 
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+footer {
+    background: #123d24;
+
+    color: white;
+
+    text-align: center;
+
+    padding: 25px;
+
+    margin-top: 30px;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 900px) {
+
+    .features {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .dashboard {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .map-box {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .about-features {
+        grid-template-columns:
+            1fr;
+    }
+}
+
+
+@media (max-width: 700px) {
+
+    header {
+        flex-direction: column;
+
+        gap: 15px;
+
+        padding: 18px 5%;
+    }
+
+    header h1 {
+        font-size: 21px;
+
+        text-align: center;
+    }
+
+    nav {
+        width: 100%;
+
+        gap: 4px;
+    }
+
+    nav a {
+        margin-left: 0;
+
+        font-size: 12px;
+
+        padding: 7px 8px;
+    }
+
+    .hero {
+        padding: 70px 20px;
+    }
+
+    .hero h2 {
+        font-size: 30px;
+    }
+
+    .hero p {
+        font-size: 16px;
+    }
+
+    .features {
+        grid-template-columns: 1fr;
+
+        padding: 40px 5%;
+    }
+
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    .map-box {
+        grid-template-columns: 1fr;
+
+        padding: 15px;
+    }
+
+    .track-box {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    #trackId {
+        max-width: none;
+    }
+
+    section:not(.hero):not(.features) {
+        padding: 50px 5%;
+    }
+
+    form {
+        padding: 20px;
+    }
+
+    .admin-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 15px;
+    }
 }
