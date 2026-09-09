@@ -3,7 +3,29 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
+const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+const streamifier = require("streamifier");
+
 const app = express();
+
+// =====================================================
+// CLOUDINARY CONFIG
+// =====================================================
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// =====================================================
+// MULTER
+// =====================================================
+
+const upload = multer({
+    storage: multer.memoryStorage()
+});
 
 // =====================================================
 // ADMIN PASSWORD
@@ -19,7 +41,7 @@ app.use(cors());
 app.use(express.json());
 
 // =====================================================
-// MONGODB CONNECTION
+// MONGODB
 // =====================================================
 
 mongoose
@@ -79,6 +101,11 @@ const complaintSchema = new mongoose.Schema({
         default: "Reported"
     },
 
+    photo: {
+        type: String,
+        default: ""
+    },
+
     date: {
         type: String,
         default: () => new Date().toLocaleString()
@@ -92,14 +119,13 @@ const Complaint = mongoose.model(
 );
 
 // =====================================================
-// HOME / TEST
+// HOME
 // =====================================================
 
 app.get("/", (req, res) => {
 
     res.json({
-        message:
-            "🌱 Smart Green Campus Backend is Running!"
+        message: "🌱 Smart Green Campus Backend is Running!"
     });
 
 });
@@ -112,21 +138,15 @@ app.get("/api/complaints", async (req, res) => {
 
     try {
 
-        const complaints =
-            await Complaint.find();
+        const complaints = await Complaint.find();
 
         res.json(complaints);
 
     } catch (error) {
 
         res.status(500).json({
-
-            message:
-                "Failed to fetch complaints",
-
-            error:
-                error.message
-
+            message: "Failed to fetch complaints",
+            error: error.message
         });
 
     }
@@ -134,59 +154,123 @@ app.get("/api/complaints", async (req, res) => {
 });
 
 // =====================================================
-// ADD COMPLAINT
+// UPLOAD PHOTO TO CLOUDINARY
 // =====================================================
 
-app.post("/api/complaints", async (req, res) => {
+function uploadToCloudinary(buffer) {
 
-    try {
+    return new Promise((resolve, reject) => {
 
-        const complaint =
-            new Complaint(req.body);
+        const stream = cloudinary.uploader.upload_stream(
+            {
+                folder: "smart-green-campus"
+            },
+            (error, result) => {
 
-        await complaint.save();
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(result);
+                }
 
-        console.log(
-            "✅ Complaint saved to MongoDB:",
-            complaint.id
+            }
         );
 
-        res.status(201).json({
+        streamifier
+            .createReadStream(buffer)
+            .pipe(stream);
 
-            message:
-                "Complaint saved successfully",
+    });
 
-            complaint:
-                complaint
+}
 
-        });
+// =====================================================
+// ADD COMPLAINT + PHOTO
+// =====================================================
 
-    } catch (error) {
+app.post(
+    "/api/complaints",
+    upload.single("photo"),
+    async (req, res) => {
 
-        console.log(
-            "❌ Error saving complaint:"
-        );
+        try {
 
-        console.log(
-            error.message
-        );
+            const complaintData = JSON.parse(
+                req.body.complaint
+            );
 
-        res.status(500).json({
+            let photoUrl = "";
 
-            message:
-                "Failed to save complaint",
+            // Upload photo if selected
+            if (req.file) {
 
-            error:
+                const result =
+                    await uploadToCloudinary(
+                        req.file.buffer
+                    );
+
+                photoUrl = result.secure_url;
+
+                console.log(
+                    "📸 Photo uploaded:",
+                    photoUrl
+                );
+
+            }
+
+            const complaint =
+                new Complaint({
+
+                    ...complaintData,
+
+                    photo: photoUrl
+
+                });
+
+            await complaint.save();
+
+            console.log(
+                "✅ Complaint saved:",
+                complaint.id
+            );
+
+            res.status(201).json({
+
+                message:
+                    "Complaint saved successfully",
+
+                complaint:
+                    complaint
+
+            });
+
+        } catch (error) {
+
+            console.log(
+                "❌ Error saving complaint:"
+            );
+
+            console.log(
                 error.message
+            );
 
-        });
+            res.status(500).json({
+
+                message:
+                    "Failed to save complaint",
+
+                error:
+                    error.message
+
+            });
+
+        }
 
     }
-
-});
+);
 
 // =====================================================
-// UPDATE COMPLAINT STATUS - ADMIN ONLY
+// UPDATE STATUS - ADMIN ONLY
 // =====================================================
 
 app.put("/api/complaints/:id", async (req, res) => {
@@ -197,19 +281,10 @@ app.put("/api/complaints/:id", async (req, res) => {
             (req.headers["x-admin-password"] || "")
                 .trim();
 
-        console.log(
-            "🔐 Admin password received:",
-            adminPassword ? "YES" : "NO"
-        );
-
         if (
             !adminPassword ||
             adminPassword !== ADMIN_PASSWORD
         ) {
-
-            console.log(
-                "❌ Wrong admin password"
-            );
 
             return res.status(401).json({
 
@@ -248,13 +323,6 @@ app.put("/api/complaints/:id", async (req, res) => {
 
         }
 
-        console.log(
-            "✅ Status updated:",
-            complaint.id,
-            "→",
-            complaint.status
-        );
-
         res.json({
 
             message:
@@ -266,14 +334,6 @@ app.put("/api/complaints/:id", async (req, res) => {
         });
 
     } catch (error) {
-
-        console.log(
-            "❌ Status update error:"
-        );
-
-        console.log(
-            error.message
-        );
 
         res.status(500).json({
 

@@ -145,41 +145,29 @@ async function submitComplaint(event) {
 
     event.preventDefault();
 
-
     const name =
-        document
-            .getElementById("name")
-            .value
-            .trim();
-
+        document.getElementById("name").value.trim();
 
     const location =
-        document
-            .getElementById("location")
-            .value;
-
+        document.getElementById("location").value;
 
     const category =
-        document
-            .getElementById("category")
-            .value;
-
+        document.getElementById("category").value;
 
     const description =
-        document
-            .getElementById("description")
-            .value
-            .trim();
-
+        document.getElementById("description").value.trim();
 
     const severity =
-        document
-            .getElementById("severity")
-            .value;
-
+        document.getElementById("severity").value;
 
     const priority =
         calculatePriority();
+
+    const photoInput =
+        document.getElementById("photo");
+
+    const photo =
+        photoInput ? photoInput.files[0] : null;
 
 
     const complaint = {
@@ -207,26 +195,73 @@ async function submitComplaint(event) {
 
         date:
             new Date().toLocaleString()
-
     };
 
 
     try {
+
+        const formData = new FormData();
+
+
+        // Complaint data
+        formData.append(
+            "id",
+            complaint.id
+        );
+
+        formData.append(
+            "name",
+            complaint.name
+        );
+
+        formData.append(
+            "location",
+            complaint.location
+        );
+
+        formData.append(
+            "category",
+            complaint.category
+        );
+
+        formData.append(
+            "description",
+            complaint.description
+        );
+
+        formData.append(
+            "severity",
+            complaint.severity
+        );
+
+        formData.append(
+            "priority",
+            complaint.priority
+        );
+
+        formData.append(
+            "date",
+            complaint.date
+        );
+
+
+        // Photo
+        if (photo) {
+
+            formData.append(
+                "photo",
+                photo
+            );
+
+        }
+
 
         const response =
             await fetch(API_URL, {
 
                 method: "POST",
 
-                headers: {
-
-                    "Content-Type":
-                        "application/json"
-
-                },
-
-                body:
-                    JSON.stringify(complaint)
+                body: formData
 
             });
 
@@ -251,7 +286,7 @@ async function submitComplaint(event) {
 
 
         alert(
-            "Complaint submitted successfully!\n\n" +
+            "✅ Complaint submitted successfully!\n\n" +
             "Complaint ID: " +
             data.complaint.id
         );
@@ -276,10 +311,9 @@ async function submitComplaint(event) {
     catch (error) {
 
         console.error(
-            "Backend Error:",
+            "❌ Backend Error:",
             error
         );
-
 
         alert(
             "❌ Complaint could not be saved.\n\n" +
@@ -813,6 +847,16 @@ function updateDashboard() {
                     <td>
                         ${c.priority}
                     </td>
+
+                    <td>
+                    ${
+                   c.photo
+                   ? `<a href="${c.photo}" target="_blank">
+                   📸 View Photo
+                   </a>`
+                   : "No Photo"
+                      }
+                     </td>
 
                     <td>
                         ${c.status}
