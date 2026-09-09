@@ -773,7 +773,7 @@ async function changeStatus(id) {
 
                     headers: {
                   "Content-Type": "application/json",
-                  "x-admin-password": sessionStorage.getItem("adminPassword")
+                  "x-admin-password": "Anshu000"
                      },
 
                     body:
