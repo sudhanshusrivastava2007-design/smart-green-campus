@@ -273,93 +273,152 @@ app.post(
 // UPDATE STATUS - ADMIN ONLY
 // =====================================================
 
-app.put("/api/complaints/:id", async (req, res) => {
+app.post(
+    "/api/complaints",
+    upload.single("photo"),
+    async (req, res) => {
 
-    try {
+        try {
 
-        const adminPassword =
-            (req.headers["x-admin-password"] || "")
-                .trim();
+            console.log("📥 Complaint received");
 
-        if (
-            !adminPassword ||
-            adminPassword !== ADMIN_PASSWORD
-        ) {
+            console.log("BODY:", req.body);
 
-            return res.status(401).json({
-
-                message:
-                    "Unauthorized: Wrong admin password"
-
-            });
-
-        }
-
-        const complaint =
-            await Complaint.findOneAndUpdate(
-
-                {
-                    id: req.params.id
-                },
-
-                {
-                    status: req.body.status
-                },
-
-                {
-                    new: true
-                }
-
+            console.log(
+                "PHOTO:",
+                req.file ? req.file.originalname : "No photo"
             );
 
-        if (!complaint) {
 
-            return res.status(404).json({
+            let photoUrl = "";
+
+
+            // ===============================
+            // UPLOAD PHOTO TO CLOUDINARY
+            // ===============================
+
+            if (req.file) {
+
+                const result =
+                    await new Promise((resolve, reject) => {
+
+                        const stream =
+                            cloudinary.uploader.upload_stream(
+                                {
+                                    folder:
+                                        "smart-green-campus"
+                                },
+
+                                (error, result) => {
+
+                                    if (error) {
+                                        reject(error);
+                                    }
+                                    else {
+                                        resolve(result);
+                                    }
+
+                                }
+                            );
+
+
+                        stream.end(
+                            req.file.buffer
+                        );
+
+                    });
+
+
+                photoUrl =
+                    result.secure_url;
+
+
+                console.log(
+                    "✅ Photo uploaded:",
+                    photoUrl
+                );
+
+            }
+
+
+            // ===============================
+            // CREATE COMPLAINT
+            // ===============================
+
+            const complaint =
+                new Complaint({
+
+                    id: req.body.id,
+
+                    name: req.body.name,
+
+                    location: req.body.location,
+
+                    category: req.body.category,
+
+                    description: req.body.description,
+
+                    severity: req.body.severity,
+
+                    priority: req.body.priority,
+
+                    status:
+                        req.body.status ||
+                        "Reported",
+
+                    date:
+                        req.body.date ||
+                        new Date().toLocaleString(),
+
+                    photo: photoUrl
+
+                });
+
+
+            await complaint.save();
+
+
+            console.log(
+                "✅ Complaint saved to MongoDB:",
+                complaint.id
+            );
+
+
+            res.status(201).json({
 
                 message:
-                    "Complaint not found"
+                    "Complaint saved successfully",
+
+                complaint:
+                    complaint
 
             });
 
         }
 
-        res.json({
 
-            message:
-                "Status updated successfully",
+        catch (error) {
 
-            complaint:
-                complaint
+            console.log(
+                "❌ Error saving complaint:"
+            );
 
-        });
+            console.log(
+                error
+            );
 
-    } catch (error) {
 
-        res.status(500).json({
+            res.status(500).json({
 
-            message:
-                "Failed to update status",
+                message:
+                    "Failed to save complaint",
 
-            error:
-                error.message
+                error:
+                    error.message
 
-        });
+            });
+
+        }
 
     }
-
-});
-
-// =====================================================
-// SERVER
-// =====================================================
-
-const PORT =
-    process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-
-    console.log(
-        `🌱 Server running on port ${PORT}`
-    );
-
-});
+);
