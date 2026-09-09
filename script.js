@@ -846,17 +846,14 @@ async function changeStatus(id) {
 
     catch (error) {
 
-        console.error(
-            "❌ Status update error:",
-            error
-        );
+    console.error("❌ Status update error:", error);
 
+    alert(
+        "❌ Status update failed:\n\n" +
+        error.message
+    );
 
-        alert(
-            "❌ Could not update complaint status."
-        );
-
-    }
+}
 
 }
 
@@ -883,7 +880,7 @@ function adminLogin() {
 
         isAdminLoggedIn = true;
 
-        // Save password for status update
+        // IMPORTANT: password save for API request
         sessionStorage.setItem(
             "adminPassword",
             password
@@ -911,7 +908,6 @@ function adminLogin() {
 
     return false;
 }
-
 
 // =====================================================
 // ADMIN LOGOUT
