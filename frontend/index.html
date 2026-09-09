@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Green Campus</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>🌱 Smart Green Campus</h1>
+
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#report">Report Problem</a>
+            <a href="#dashboard">Dashboard</a>
+        </nav>
+    </header>
+
+
+    <!-- Home Section -->
+    <section id="home" class="hero">
+
+        <h2>Make Our Campus Smarter & Greener</h2>
+
+        <p>
+            Report water, electricity, waste and
+            maintenance problems easily.
+        </p>
+
+        <a href="#report">
+            <button>Report a Problem</button>
+        </a>
+
+    </section>
+
+
+    <!-- Features -->
+    <section class="features">
+
+        <div class="card">
+            <h3>💧 Water</h3>
+            <p>Report water leakage and wastage.</p>
+        </div>
+
+        <div class="card">
+            <h3>⚡ Energy</h3>
+            <p>Report electricity problems.</p>
+        </div>
+
+        <div class="card">
+            <h3>🗑️ Waste</h3>
+            <p>Report garbage and cleanliness issues.</p>
+        </div>
+
+        <div class="card">
+            <h3>🏫 Maintenance</h3>
+            <p>Report classroom and laboratory problems.</p>
+        </div>
+        <div class="card">
+            <h3>📚Library</h3>
+            <p>Report Library problem</p>
+        </div>
+
+    </section>
+
+
+    <!-- Report Problem -->
+    <section id="report">
+
+        <h2>📝 Report a Problem</h2>
+
+        <form id="complaintForm">
+
+            <label>Your Name</label>
+            <input
+                type="text"
+                id="name"
+                placeholder="Enter your name"
+                required
+            >
+
+
+            <label>Location</label>
+
+            <select id="location" required>
+
+                <option value="">
+                    Select Location
+                </option>
+
+                <option>CSE Block</option>
+                <option>EC Block</option>
+                <option>Pharmacy Block</option>
+                <option>Library</option>
+                <option>Teacher Staff</option>
+                <option>Hostel</option>
+
+            </select>
+
+
+            <label>Problem Category</label>
+
+            <select id="category" required>
+
+                <option value="">
+                    Select Category
+                </option>
+
+                <option>Water</option>
+                <option>Energy</option>
+                <option>Waste</option>
+                <option>Maintenance</option>
+                <option>Library</option>
+
+            </select>
+
+
+            <label>Problem Description</label>
+
+            <textarea
+                id="description"
+                placeholder="Describe your problem..."
+                required
+            ></textarea>
+
+
+            <label>Problem Severity</label>
+
+            <select id="severity" required>
+
+                <option value="">
+                    Select Severity
+                </option>
+
+                <option>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+
+            </select>
+            <label>Smart Priority</label>
+            <input type="text" id="priority" value="Automatically calculated" readonly>
+
+
+            <button type="submit">
+                Submit Complaint
+            </button>
+
+        </form>
+
+
+        <div id="successMessage"></div>
+
+    </section>
+
+
+    <!-- Track Complaint -->
+    <section id="track">
+
+        <h2>🔎 Track Complaint</h2>
+
+        <input
+            type="text"
+            id="trackId"
+            placeholder="Enter Complaint ID"
+        >
+
+        <button onclick="trackComplaint()">
+            Track
+        </button>
+
+        <div id="trackResult"></div>
+
+    </section>
+
+
+    <!-- Dashboard -->
+    <section id="dashboard">
+
+    <h2>📊 Admin Dashboard</h2>
+
+    <div class="dashboard">
+
+        <div class="stat">
+    <h3 id="totalComplaints">0</h3>
+    <p>📋 Total Complaints</p>
+</div>
+
+<div class="stat">
+    <h3 id="high">0</h3>
+    <p>🔴 High Priority</p>
+</div>
+
+<div class="stat">
+    <h3 id="resolved">0</h3>
+    <p>🟢 Resolved</p>
+</div>
+
+<div class="stat">
+   <h3 id="score">0</h3>
+    <p>🌱 Sustainability Score</p>
+</div>
+
+    </div>
+
+
+    <!-- Complaint Table -->
+
+    <h2 class="table-heading">
+        📋 Complaint Management
+    </h2>
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>ID</th>
+
+                    <th>Name</th>
+
+                    <th>Category</th>
+
+                    <th>Location</th>
+
+                    <th>Priority</th>
+
+                    <th>Status</th>
+
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="complaintTable">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+    <!-- Footer -->
+    <footer>
+
+        <p>
+            🌱 Smart Green Campus © 2026
+        </p>
+
+    </footer>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

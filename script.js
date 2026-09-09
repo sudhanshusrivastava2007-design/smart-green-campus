@@ -283,7 +283,7 @@ async function submitComplaint(event) {
 
         alert(
             "❌ Complaint could not be saved.\n\n" +
-            "Please try again."
+            error.message
         );
 
     }
@@ -516,11 +516,173 @@ function calculateSustainabilityScore() {
 
 
 // =====================================================
+// DYNAMIC CAMPUS MAP
+// =====================================================
+
+function updateCampusMap() {
+
+    const mapLocations =
+        document.querySelectorAll(
+            ".map-location"
+        );
+
+
+    if (!mapLocations.length) {
+
+        return;
+
+    }
+
+
+    mapLocations.forEach(locationBox => {
+
+        const heading =
+            locationBox.querySelector("h3");
+
+        if (!heading) {
+
+            return;
+
+        }
+
+
+        const locationName =
+            heading.innerText.trim();
+
+
+        // Only active complaints
+
+        const locationComplaints =
+            complaints.filter(
+
+                c =>
+                    c.location === locationName &&
+                    c.status !== "Resolved"
+
+            );
+
+
+        const total =
+            locationComplaints.length;
+
+
+        const highPriority =
+            locationComplaints.filter(
+
+                c =>
+                    c.priority === "High"
+
+            ).length;
+
+
+        // Existing span
+
+        let span =
+            locationBox.querySelector("span");
+
+
+        if (!span) {
+
+            span =
+                document.createElement("span");
+
+            locationBox.appendChild(span);
+
+        }
+
+
+        if (total === 0) {
+
+            span.innerHTML =
+                "✅ No active complaints";
+
+        }
+
+        else {
+
+            span.innerHTML =
+                "📋 " +
+                total +
+                " Active Complaint" +
+                (total > 1 ? "s" : "");
+
+        }
+
+
+        // Remove old count
+
+        const oldCount =
+            locationBox.querySelector(
+                ".map-count"
+            );
+
+        if (oldCount) {
+
+            oldCount.remove();
+
+        }
+
+
+        // Remove old high priority
+
+        const oldHigh =
+            locationBox.querySelector(
+                ".map-high"
+            );
+
+        if (oldHigh) {
+
+            oldHigh.remove();
+
+        }
+
+
+        // Active complaint count
+
+        if (total > 0) {
+
+            const count =
+                document.createElement("div");
+
+            count.className =
+                "map-count";
+
+            count.innerText =
+                "📊 Active: " + total;
+
+            locationBox.appendChild(count);
+
+        }
+
+
+        // High priority count
+
+        if (highPriority > 0) {
+
+            const high =
+                document.createElement("div");
+
+            high.className =
+                "map-high";
+
+            high.innerText =
+                "🔴 High Priority: " +
+                highPriority;
+
+            locationBox.appendChild(high);
+
+        }
+
+    });
+
+}
+
+
+// =====================================================
 // UPDATE DASHBOARD
 // =====================================================
 
 function updateDashboard() {
-
 
     // Active complaints only
 
@@ -533,7 +695,9 @@ function updateDashboard() {
         );
 
 
-    // Total active
+    // =================================================
+    // TOTAL ACTIVE
+    // =================================================
 
     const total =
         document.getElementById(
@@ -549,7 +713,9 @@ function updateDashboard() {
     }
 
 
-    // High Priority
+    // =================================================
+    // HIGH PRIORITY
+    // =================================================
 
     const high =
         document.getElementById("high");
@@ -569,7 +735,9 @@ function updateDashboard() {
     }
 
 
-    // Resolved
+    // =================================================
+    // RESOLVED
+    // =================================================
 
     const resolved =
         document.getElementById("resolved");
@@ -589,7 +757,9 @@ function updateDashboard() {
     }
 
 
-    // Sustainability
+    // =================================================
+    // SUSTAINABILITY
+    // =================================================
 
     const score =
         document.getElementById("score");
@@ -603,7 +773,9 @@ function updateDashboard() {
     }
 
 
-    // Complaint table
+    // =================================================
+    // COMPLAINT TABLE
+    // =================================================
 
     const table =
         document.getElementById(
@@ -611,88 +783,93 @@ function updateDashboard() {
         );
 
 
-    if (!table) {
+    if (table) {
 
-        return;
-
-    }
+        table.innerHTML = "";
 
 
-    table.innerHTML = "";
+        activeComplaints.forEach(c => {
+
+            table.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        ${c.id}
+                    </td>
+
+                    <td>
+                        ${c.name}
+                    </td>
+
+                    <td>
+                        ${c.category}
+                    </td>
+
+                    <td>
+                        ${c.location}
+                    </td>
+
+                    <td>
+                        ${c.priority}
+                    </td>
+
+                    <td>
+                        ${c.status}
+                    </td>
+
+                    <td>
+
+                        <button
+                            onclick="changeStatus('${c.id}')"
+                        >
+                            Change Status
+                        </button>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
 
 
-    // IMPORTANT:
-    // Resolved complaints are not shown
+        // Empty state
 
-    activeComplaints.forEach(c => {
+        if (activeComplaints.length === 0) {
 
-        table.innerHTML += `
+            table.innerHTML = `
 
-            <tr>
+                <tr>
 
-                <td>
-                    ${c.id}
-                </td>
-
-                <td>
-                    ${c.name}
-                </td>
-
-                <td>
-                    ${c.category}
-                </td>
-
-                <td>
-                    ${c.location}
-                </td>
-
-                <td>
-                    ${c.priority}
-                </td>
-
-                <td>
-                    ${c.status}
-                </td>
-
-                <td>
-
-                    <button
-                        onclick="changeStatus('${c.id}')"
+                    <td
+                        colspan="7"
+                        style="text-align:center; padding:30px;"
                     >
-                        Change Status
-                    </button>
 
-                </td>
+                        🎉 No active complaints!
 
-            </tr>
+                        <br>
 
-        `;
+                        All complaints have been resolved.
 
-    });
+                    </td>
 
+                </tr>
 
-    // Empty state
+            `;
 
-    if (activeComplaints.length === 0) {
-
-        table.innerHTML = `
-
-            <tr>
-
-                <td
-                    colspan="7"
-                    style="text-align:center; padding:30px;"
-                >
-                    🎉 No active complaints!
-                    <br>
-                    All complaints have been resolved.
-                </td>
-
-            </tr>
-
-        `;
+        }
 
     }
+
+
+    // =================================================
+    // UPDATE CAMPUS MAP
+    // =================================================
+
+    updateCampusMap();
 
 }
 
@@ -702,7 +879,6 @@ function updateDashboard() {
 // =====================================================
 
 async function changeStatus(id) {
-
 
     if (!isAdminLoggedIn) {
 
@@ -753,8 +929,6 @@ async function changeStatus(id) {
 
     else {
 
-        // Resolved cannot be changed again
-
         return;
 
     }
@@ -772,9 +946,14 @@ async function changeStatus(id) {
                     method: "PUT",
 
                     headers: {
-                  "Content-Type": "application/json",
-                  "x-admin-password": "Anshu000"
-                     },
+
+                        "Content-Type":
+                            "application/json",
+
+                        "x-admin-password":
+                            "Anshu000"
+
+                    },
 
                     body:
                         JSON.stringify({
@@ -796,8 +975,10 @@ async function changeStatus(id) {
         if (!response.ok) {
 
             throw new Error(
+
                 data.message ||
                 "Status update failed"
+
             );
 
         }
@@ -816,6 +997,8 @@ async function changeStatus(id) {
 
         }
 
+
+        // Update everything
 
         updateDashboard();
 
@@ -841,23 +1024,34 @@ async function changeStatus(id) {
         }
 
 
+        console.log(
+            "✅ Complaint status changed:",
+            id,
+            "→",
+            newStatus
+        );
+
     }
 
 
     catch (error) {
 
-    console.error("❌ Status update error:", error);
+        console.error(
+            "❌ Status update error:",
+            error
+        );
 
-    alert(
-        "❌ Status update failed:\n\n" +
-        error.message
-    );
+
+        alert(
+
+            "❌ Status update failed:\n\n" +
+            error.message
+
+        );
+
+    }
 
 }
-
-}
-
-
 
 
 // =====================================================
@@ -866,48 +1060,76 @@ async function changeStatus(id) {
 
 function adminLogin() {
 
-    const password = prompt(
-        "🔐 Enter Admin Password:"
-    );
+    const password =
+        prompt(
+            "🔐 Enter Admin Password:"
+        );
+
 
     if (password === null) {
+
         return false;
+
     }
 
-    const ADMIN_PASSWORD = "Anshu000";
 
-    if (password === ADMIN_PASSWORD) {
+    const ADMIN_PASSWORD =
+        "Anshu000";
 
-        isAdminLoggedIn = true;
 
-        // IMPORTANT: password save for API request
+    if (
+        password === ADMIN_PASSWORD
+    ) {
+
+        isAdminLoggedIn =
+            true;
+
+
+        // Save password for session
+
         sessionStorage.setItem(
             "adminPassword",
             password
         );
 
+
         alert(
             "✅ Admin access granted."
         );
 
+
         const dashboard =
-            document.getElementById("dashboard");
+            document.getElementById(
+                "dashboard"
+            );
+
 
         if (dashboard) {
+
             dashboard.scrollIntoView({
-                behavior: "smooth"
+
+                behavior:
+                    "smooth"
+
             });
+
         }
 
+
         return true;
+
     }
+
 
     alert(
         "❌ Incorrect admin password."
     );
 
+
     return false;
+
 }
+
 
 // =====================================================
 // ADMIN LOGOUT
@@ -915,29 +1137,42 @@ function adminLogin() {
 
 function adminLogout() {
 
-    isAdminLoggedIn = false;
+    isAdminLoggedIn =
+        false;
+
 
     sessionStorage.removeItem(
         "adminPassword"
     );
 
-    window.location.hash = "home";
+
+    window.location.hash =
+        "home";
+
 
     alert(
         "Admin logged out."
     );
+
 }
+
+
 // =====================================================
 // ADMIN NAVIGATION
 // =====================================================
 
 const adminNav =
-    document.getElementById("adminNav");
+    document.getElementById(
+        "adminNav"
+    );
+
 
 if (adminNav) {
 
     adminNav.addEventListener(
+
         "click",
+
         function(event) {
 
             event.preventDefault();
@@ -945,7 +1180,9 @@ if (adminNav) {
             adminLogin();
 
         }
+
     );
+
 }
 
 
@@ -954,13 +1191,19 @@ if (adminNav) {
 // =====================================================
 
 const adminLogoutButton =
-    document.getElementById("adminLogout");
+    document.getElementById(
+        "adminLogout"
+    );
+
 
 if (adminLogoutButton) {
 
     adminLogoutButton.addEventListener(
+
         "click",
+
         adminLogout
+
     );
 
 }
@@ -979,8 +1222,11 @@ const complaintForm =
 if (complaintForm) {
 
     complaintForm.addEventListener(
+
         "submit",
+
         submitComplaint
+
     );
 
 }
@@ -999,8 +1245,11 @@ const severity =
 if (severity) {
 
     severity.addEventListener(
+
         "change",
+
         updateLivePriority
+
     );
 
 }
@@ -1019,8 +1268,11 @@ const category =
 if (category) {
 
     category.addEventListener(
+
         "change",
+
         updateLivePriority
+
     );
 
 }
@@ -1039,8 +1291,11 @@ const locationSelect =
 if (locationSelect) {
 
     locationSelect.addEventListener(
+
         "change",
+
         updateLivePriority
+
     );
 
 }

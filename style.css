@@ -373,9 +373,22 @@ form button {
 }
 
 .map-location span {
+    display: block;
     color: #666;
-
     font-size: 14px;
+    margin-top: 5px;
+}
+
+.map-count {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #166534;
+}
+
+.map-high {
+    margin-top: 5px;
+    font-size: 13px;
+    color: #b91c1c;
 }
 
 
